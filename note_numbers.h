@@ -2,7 +2,6 @@
 #define NOTE_NUMBERS_H
 
 #include <map>
-#include <ctype.h>
 
 // Map notes to midi numbers
 std::map<char, int> MIDI_NUMBERS = {{'C', 0},
