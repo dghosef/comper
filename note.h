@@ -8,9 +8,8 @@
  * @author Joseph Tan
  *
  * @details B# Octave 3 is the same as C Octave 4.
- * @todo implement closest note
- * @todo implement time?
  */
+
 
 class Note {
 
@@ -28,14 +27,6 @@ public:
     /// @overload Note(int midiNumber)
     /// @brief constructs note given a midi number. By default uses flats.
     Note(int midiNumber);
-
-    /// @brief copy constructor
-    /// @param &note - the note being copied
-    Note(const Note &note);
-
-    /// @brief set note equal to another note
-    /// @param &note the note that will be copied
-    Note & operator=(const Note &note);
 
     /// @brief change note name. Automatically changes midi number along with it. Keeps octave
     /// @param name is the name of the new note
@@ -99,7 +90,7 @@ public:
     Note closest(std::string name);
 
 
-private:
+protected:
     std::string _name;
     int _midiNumber;
     int _octave;
@@ -110,4 +101,40 @@ private:
     void _setOctave();
 };
 
+/**
+  * @struct An object for a note with a duration
+  * note is a note object
+  * duration is an int that represents the number of times the note should be played
+  * for the cumulative length to equal a whole note. For example, a quarter note would
+  * be 4, an eighth note would be 8, and a quarter note triplet would be 12.
+  */
+struct DurationNote {
+    Note note;
+    double duration;
+
+    /// @brief default constructor for DurationNote. Default note is a middle c quarternote
+    DurationNote() {
+        duration = 4;
+    }
+
+    ///@overload DurationNote(std::string name)
+    DurationNote(std::string name) {
+        note = Note(name);
+        duration = 4;
+    }
+
+    ///@overload DurationNote(std::string name, int octave)
+    DurationNote(std::string name, int octave) {
+        note = Note(name, octave);
+        duration = 4;
+    }
+
+    /// @overload DurationNote(std::string name, int octave, double length)
+    DurationNote(std::string name, int octave, double length) {
+        note = Note(name, octave);
+        duration = length;
+    }
+};
+
 #endif // NOTE_H
+

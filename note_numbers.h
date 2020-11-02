@@ -4,7 +4,7 @@
 #include <map>
 
 // Map notes to midi numbers
-std::map<char, int> MIDI_NUMBERS = {{'C', 0},
+const std::map<char, int> MIDI_NUMBERS = {{'C', 0},
                                     {'D', 2},
                                     {'E', 4},
                                     {'F', 5},
@@ -13,7 +13,7 @@ std::map<char, int> MIDI_NUMBERS = {{'C', 0},
                                     {'B', 11}};
 
 // Sometimes we want to map midi numbers to notes.
-std::map<int, char> MIDI_NAMES = {{0, 'C'},
+const std::map<int, char> MIDI_NAMES = {{0, 'C'},
                                   {2, 'D'},
                                   {4, 'E'},
                                   {5, 'F'},

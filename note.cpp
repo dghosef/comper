@@ -29,19 +29,6 @@ Note::Note(int midiNumber) {
     _setOctave();
 }
 
-Note::Note(const Note &note) {
-    this->_name = note._name;
-    this->_midiNumber = note._midiNumber;
-    this->_octave = note._octave;
-}
-
-Note & Note::operator=(const Note &note) {
-    this->_name = note._name;
-    this->_midiNumber = note._midiNumber;
-    this->_octave = note._octave;
-    return *this;
-}
-
 Note & Note::operator=(string name) {
     setNote(name);
     return *this;
@@ -80,7 +67,7 @@ int Note::getNumber() {
 }
 
 int Note::getNumber(string name) {
-    int midiNumber = MIDI_NUMBERS[toupper(name[0])];
+    int midiNumber = MIDI_NUMBERS.at(toupper(name[0]));
     // Make sure that we don't count the note 'b' as 'bb'
     name = name.substr(1);
     // adjust for sharps and flats
@@ -136,12 +123,12 @@ void Note::_setNumber() {
 void Note::_setName() {
     // Referenced the following because I'm a noob at c++. Idk if references like this are necessary
     // https://stackoverflow.com/questions/3136520/determine-if-map-contains-a-value-for-a-key
-    map<int, char>::iterator it = MIDI_NAMES.find(_midiNumber % 12);
+     auto it = MIDI_NAMES.find(_midiNumber % 12);
     if(it != MIDI_NAMES.end()) {
-        _name = MIDI_NAMES[_midiNumber % 12];
+        _name = MIDI_NAMES.at(_midiNumber % 12);
     } else {
         // C# and Db are expressed as Db.
-        _name = MIDI_NAMES[_midiNumber % 12 + 1];
+        _name = MIDI_NAMES.at(_midiNumber % 12 + 1);
         _name += "b";
     }
 }
