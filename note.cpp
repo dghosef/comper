@@ -5,28 +5,69 @@
 
 using namespace std;
 
+/// @todo Make sure we use const and & at the right place in arguments and return types
 Note::Note() {
     _name = "C";
     _octave = MIDDLE_OCTAVE;
     _setNumber();
+    _duration = 0;
+    _velocity = 0;
 }
 
 Note::Note(string name) {
     _name = name;
     _octave = MIDDLE_OCTAVE;
     _setNumber();
+    _duration = 0;
+    _velocity = 0;
 }
 
 Note::Note(string name, int octave) {
     _name = name;
     _octave = octave;
     _setNumber();
+    _duration = 0;
+    _velocity = 0;
+}
+
+Note::Note(string name, int octave, int duration) {
+    _name = name;
+    _octave = octave;
+    _setNumber();
+    _duration = duration;
+    _velocity = 0;
+}
+
+Note::Note(string name, int octave, int duration, int velocity) {
+    _name = name;
+    _octave = octave;
+    _setNumber();
+    _duration = duration;
+    _velocity = velocity;
 }
 
 Note::Note(int midiNumber) {
     _midiNumber = midiNumber;
     _setName();
     _setOctave();
+    _duration = 0;
+    _velocity = 0;
+}
+
+Note::Note(int midiNumber, int duration) {
+    _midiNumber = midiNumber;
+    _setName();
+    _setOctave();
+    _duration = duration;
+    _velocity = 0;
+}
+
+Note::Note(int midiNumber, int duration, int velocity) {
+    _midiNumber = midiNumber;
+    _setName();
+    _setOctave();
+    _duration = duration;
+    _velocity = velocity;
 }
 
 Note & Note::operator=(string name) {
@@ -34,11 +75,27 @@ Note & Note::operator=(string name) {
     return *this;
 }
 
+Note & Note::operator=(int number) {
+    _midiNumber = number;
+    _setName();
+    _setOctave();
+    return *this;
+}
+
 int Note::operator-(Note &note) {
     return this->distance(note);
 }
 
-bool Note::operator==(Note &note) {
+Note Note::operator+(int amount) {
+    return Note(_midiNumber + amount);
+}
+
+Note & Note::operator+=(int amount) {
+    setNumber(_midiNumber + amount);
+    return *this;
+}
+
+bool Note::operator==(const Note &note) {
     return note._midiNumber == this->_midiNumber;
 }
 
@@ -47,7 +104,7 @@ bool Note::operator==(int midiNumber) {
 }
 
 bool Note::operator==(string name) {
-    return getNumber(name) == _midiNumber;
+    return number(name) == _midiNumber;
 }
 
 bool Note::operator!=(Note &note) {
@@ -59,26 +116,35 @@ bool Note::operator!=(int midiNumber) {
 }
 
 bool Note::operator!=(string name) {
-    return getNumber(name) != _midiNumber;
+    return number(name) != _midiNumber;
 }
 
-int Note::getNumber() {
+bool Note::operator>(Note &note) {
+    return this->number() > note.number();
+}
+
+bool Note::operator<(Note &note) {
+    return this->number() < note.number();
+}
+
+int Note::number() {
     return _midiNumber;
 }
 
-int Note::getNumber(string name) {
+int Note::number(string name) {
     int midiNumber = MIDI_NUMBERS.at(toupper(name[0]));
     // Make sure that we don't count the note 'b' as 'bb'
     name = name.substr(1);
     // adjust for sharps and flats
-    if(regex_search(name, regex("##")))
+    if(regex_search(name, regex("##"))) {
         midiNumber += 2;
-    else if(regex_search(name, regex("#")))
+    } else if(regex_search(name, regex("#"))) {
         midiNumber++;
-    else if(regex_search(name, regex("bb")))
+    } else if(regex_search(name, regex("bb"))) {
         midiNumber -= 2;
-    else if(regex_search(name, regex("b")))
+    } else if(regex_search(name, regex("b"))) {
         midiNumber--;
+    }
     if(midiNumber < 0) {
         midiNumber += NUM_NOTES;
     }
@@ -86,11 +152,19 @@ int Note::getNumber(string name) {
     return midiNumber;
 }
 
-int Note::getOctave() {
+int Note::octave() {
     return _octave;
 }
 
-string Note::getName() {
+int Note::duration() {
+    return _duration;
+}
+
+int Note::velocity() {
+    return _velocity;
+}
+
+string Note::name() {
     return _name;
 }
 
@@ -104,20 +178,34 @@ void Note::setOctave(int octave) {
     _setNumber();
 }
 
+void Note::setNumber(int number) {
+    _midiNumber = number;
+    _setName();
+    _setOctave();
+}
+
+void Note::setVelocity(int velocity) {
+    _velocity = velocity;
+}
+
+void Note::setDuration(int duration) {
+    _duration = duration;
+}
+
 int Note::distance(Note &note) {
-    return abs(note.getNumber() - this->getNumber());
+    return abs(note.number() - this->number());
 }
 
 int Note::shortestDistance(Note &note) {
     int longDistance = distance(note);
     if(longDistance > NUM_NOTES) {
-        return min(12 - longDistance % NUM_NOTES, longDistance % NUM_NOTES);
+        return min(NUM_NOTES - longDistance % NUM_NOTES, longDistance % NUM_NOTES);
     }
     return longDistance;
 }
 
 void Note::_setNumber() {
-    _midiNumber = getNumber(_name);
+    _midiNumber = number(_name);
 }
 
 void Note::_setName() {
@@ -139,10 +227,11 @@ void Note::_setOctave() {
 
 Note Note::closest(std::string name) {
     Note note(name, _octave);
-    if(note.getNumber() < this->_midiNumber - NUM_NOTES / 2) {
-        note.setOctave(note.getOctave() + 1);
-    } else if(note.getNumber() > this->_midiNumber + NUM_NOTES / 2) {
-        note.setOctave(note.getOctave() - 1);
+    if(note.number() < this->_midiNumber - NUM_NOTES / 2) {
+        note.setOctave(note.octave() + 1);
+    } else if(note.number() > this->_midiNumber + NUM_NOTES / 2) {
+        note.setOctave(note.octave() - 1);
     }
     return note;
 }
+

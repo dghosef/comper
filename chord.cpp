@@ -20,107 +20,92 @@ Chord::Chord(string name) {
     _setTones();
 }
 
-void Chord::_setFirst() {
-    // regex to find the _first note
-    _first.setOctave(_octave);
-    regex _firstRegex = regex("(^[A-Ga-g](#|b)?)|(/[A-Ga-g](#|b)?)");
+// referenced https://stackoverflow.com/questions/39855341/equals-operator-on-stl-vector-of-pointers
+bool Chord::operator==(const Chord & chord) {
+    return equal(begin(this->_notes), end(this->_notes), begin(chord._notes),
+                 [](Note* a, Note* b){return *a == *b;});
+}
+
+bool Chord::operator!=(const Chord & chord) {
+    return !equal(begin(this->_notes), end(this->_notes), begin(chord._notes),
+                 [](Note* a, Note* b){return *a == *b;});
+}
+
+void Chord::_setBass() {
+    // regex to find the _bass note
+    _bass.setOctave(_octave);
+    regex _bassRegex = regex("(^[A-Ga-g](#|b)?)|(/[A-Ga-g](#|b)?)");
     std::sregex_iterator end;
-    // augmented and diminished messages often confuse our _first finder regex so remove temporarily
+    // augmented and diminished messages often confuse our _bass finder regex so remove temporarily
     string nameCleaned = regex_replace(_name,
                                        regex("((aug)|(Aug)|(dim)|(Dim)|(hdim)|(Hdim)).*"), "");
-    for(std::sregex_iterator it(nameCleaned.begin(), nameCleaned.end(),
-                                _firstRegex); it != end; it++) {
-        // The _first will always be the last match. For example, the regex search of C#/Gb returns
+    for(std::sregex_iterator it(nameCleaned.begin(), nameCleaned.end(), _bassRegex);
+        it != end; it++) {
+        // The _bass will always be the last match. For example, the regex search of C#/Gb returns
         // C -> C# -> G -> Gb
-        // If our _first is at a slash, take out the slash
-        _first = (it->str())[0] == '/' ? (it->str()).substr(1) : it->str();
+        // If our _bass is at a slash, take out the slash
+        _bass = (it->str())[0] == '/' ? (it->str()).substr(1) : it->str();
     }
 }
 
-void Chord::_setBottom() {
-    _bottom = Note(_name.substr(0, 2), _octave); // We need the bottom of the chord to find
-                                            // each chord element. Root isn't enough b/c of / chords
-    if(_bottom < _first) {
-        _bottom.setOctave(_bottom.octave() + 1);
+void Chord::_setFirst() {
+    _first = Note(_name.substr(0, 2), _octave);
+    if(_first < _bass) {
+        _first.setOctave(_bass.octave() + 1);
     }
 }
 
 void Chord::_setSecond() {
     int _secondDist = regex_search(_name, regex("(b9)|(b2)")) ? 1 : 2;
     _secondDist = regex_search(_name, regex("(#9)|(#2)")) ? 3 : _secondDist;
-    _second = _bottom + _secondDist;
+    _second = _first + _secondDist;
 }
 
 void Chord::_setThird() {
     int _thirdDist = regex_search(_name, regex("-|~|(^[a-gA-G](#|b)?( )?(/.*)?m(#|b| |[1-9]|(aug)|"
                                                "\\+)|m$)|^[a-g]|(b3)|(min)|(dim)|(hdim)")) ? 3 : 4;
     _thirdDist = regex_search(_name, regex("#3")) ? 5 : _thirdDist;
-    _third = _bottom + _thirdDist;
+    _third = _first + _thirdDist;
 }
 
 void Chord::_setFourth() {
     int _fourthDist = regex_search(_name, regex("(#11)|(#4)")) ? 6 : 5;
     _fourthDist = regex_search(_name, regex("(b4)|(b11)")) ? 4 : _fourthDist;
-    _fourth = _bottom + _fourthDist;
+    _fourth = _first + _fourthDist;
 }
 
 void Chord::_setFifth() {
     int _fifthDist = regex_search(_name, regex("(#5)|\\+|(aug)")) ? 8 : 7;
     _fifthDist = regex_search(_name, regex("(b5)|(dim)|(hdim)")) ? 6 : _fifthDist;
-    _fifth = _bottom + _fifthDist;
+    _fifth = _first + _fifthDist;
 }
 
 void Chord::_setSixth() {
     int _sixthDist = regex_search(_name, regex("(#6)|(#13)")) ? 10 : 9;
     _sixthDist = regex_search(_name, regex("(b6)|(b13)")) ? 8 : _sixthDist;
-    _sixth = _bottom + _sixthDist;
+    _sixth = _first + _sixthDist;
 }
 
 void Chord::_setSeventh() {
     int _seventhDist = regex_search(_name, regex("maj|[A-G]#?b?$")) ? 11 : 10;
     _seventhDist = regex_search(_name, regex("b7")) ? 10 : _seventhDist;
     _seventhDist = regex_search(_name, regex("[a-gA-G](#|b)?( )?(dim)")) ? 9 : _seventhDist;
-    _seventh = _bottom + _seventhDist;
+    _seventh = _first + _seventhDist;
 }
 
 void Chord::_setTones() {
+    _setBass();
     _setFirst();
-    _setBottom();
     _setSecond();
     _setThird();
     _setFourth();
     _setFifth();
     _setSixth();
     _setSeventh();
-    /*
-    // For each chord tone, performs a regex search for an instruction to be altered and sets it
-    // accordingly
-    int _secondDist = regex_search(_name, regex("(b9)|(b2)")) ? 1 : 2;
-    _secondDist = regex_search(_name, regex("(#9)|(#2)")) ? 3 : _secondDist;
-    _second = _bottom + _secondDist;
+}
 
-    int _thirdDist = regex_search(_name, regex("-|~|(^[a-gA-G](#|b)?( )?(/.*)?m(#|b| |[1-9]|(aug)|\\+)|m$)"
-                                               "|^[a-g]|(b3)|(min)|(dim)|(hdim)")) ? 3 : 4;
-    _thirdDist = regex_search(_name, regex("#3")) ? 5 : _thirdDist;
-    _third = _bottom + _thirdDist;
-
-    int _fourthDist = regex_search(_name, regex("(#11)|(#4)")) ? 6 : 5;
-    _fourthDist = regex_search(_name, regex("(b4)|(b11)")) ? 4 : _fourthDist;
-    _fourth = _bottom + _fourthDist;
-
-    int _fifthDist = regex_search(_name, regex("(#5)|\\+|(aug)")) ? 8 : 7;
-    _fifthDist = regex_search(_name, regex("(b5)|(dim)|(hdim)")) ? 6 : _fifthDist;
-    _fifth = _bottom + _fifthDist;
-
-    int _sixthDist = regex_search(_name, regex("(#6)|(#13)")) ? 10 : 9;
-    _sixthDist = regex_search(_name, regex("(b6)|(b13)")) ? 8 : _sixthDist;
-    _sixth = _bottom + _sixthDist;
-
-    int _seventhDist = regex_search(_name, regex("maj|[A-G]#?b?$")) ? 11 : 10;
-    _seventhDist = regex_search(_name, regex("b7")) ? 10 : _seventhDist;
-    _seventhDist = regex_search(_name, regex("[a-gA-G](#|b)?( )?(dim)")) ? 9 : _seventhDist;
-    _seventh = _bottom + _seventhDist;
-    */
+Note Chord::bass() {
+    return _bass;
 }
 
 Note Chord::first() {

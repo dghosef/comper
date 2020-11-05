@@ -27,8 +27,9 @@
   * YOU SHOULD ONLY SPECIFY A NAME IF ITS AN ALTERATION. CHORDS LIKE C9 MAY NOT WORK. THATS WHAT
   * ESSENTIAL TONES ARE FOR. Put a space after the root of the chord just to be safe.
   * Should have the order root, major/min/dim indication, 7, and then any order of other chord tones.
-  * Only the root is necessary
-  * @todo: error handling, research more ways to express chords
+  * Only the root is necessary. Bass will only be differnet than root in a slash chord. No
+  * double sharps or flats in chord
+  * @todo: error handling, research more ways to express chords, clean up documentation
   */
 
 /// @todo documentation, implementations, error handling for illegal inputs?
@@ -45,18 +46,29 @@ public:
 
     /// @overload Chord(std::string name, vector<int> voicing)
     Chord(std::string name, std::vector<int> voicing);
+
+    /// @brief compares all the notes with chord and returns true if and only if they're all equal
+    /// @param &chord the note to be compared to
+    bool operator==(const Chord & chord);
+
+    /// @brief compares all the notes with chord and returns false if and only if they're all equal
+    /// @param &chord the note to be compared to
+    bool operator!=(const Chord & chord);
     /*
     void setVoicing(vector<int> voicing);
-    vector<int> voicing();
+    == operator
+    vector<int> voicingNumber();
+    vector<Note> voicing()
     std::vector<int> closestVoicing(Chord chord);
     void setDuration();
     void setVelocity();
     void setOctave(int octave);
     std::string name();
-    std::set<int> voicing();
     */
 
     /// @brief Each of the following functions returns a note object corresponding to its degree
+    /// The bottom of a C/G chord would be G and the first/root would be C
+    Note bass();
     Note first();
     Note second();
     Note third();
@@ -72,8 +84,9 @@ public:
     Note eleventh();
     Note thirteenth();
 private:
+    // sets our notes according to the name. _setBass should be called then _setFirst then the rest
     void _setFirst();
-    void _setBottom();
+    void _setBass();
     void _setSecond();
     void _setThird();
     void _setFourth();
@@ -81,12 +94,19 @@ private:
     void _setSixth();
     void _setSeventh();
     void _setTones();
+
+    // Each note will have a duration and velocity value of _duration and _velocity respectively.
+    // _bass will have the octave _octave and the rest build on it
     int _duration, _velocity, _octave;
+
+    // the name of our chord in the form described above
     std::string _name;
-    std::set<int> _essentialTones, _illegalTones;
+
+    // a series of chord tones indicating the voicing of this chord that will be played.
     std::vector<int> _voicing;
-    Note _bottom, _first, _second, _third, _fourth, _fifth, _sixth, _seventh;
-    std::vector<Note*> notes = {&_first, &_second, &_third, &_fourth, &_fifth, &_sixth, &_seventh};
+    Note _bass, _first, _second, _third, _fourth, _fifth, _sixth, _seventh;
+    const std::vector<Note*> _notes = {&_bass, &_first, &_second, &_third, &_fourth, &_fifth,
+                                       &_sixth, &_seventh};
 };
 
 #endif // CHORD_H
