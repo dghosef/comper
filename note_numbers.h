@@ -24,6 +24,8 @@ const std::map<int, char> MIDI_NAMES = {{0, 'C'},
 // there are 12 total notes
 const int NUM_NOTES = 12;
 
+// there are 7 degrees in a chord
+const int NUM_DEGREES = 7;
 // Midi starts at 0
 const int MIDI_START_OCTAVE = 0;
 

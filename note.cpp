@@ -1,149 +1,171 @@
-#include "note.h"
-#include "note_numbers.h"
+/*
+This file is part of Comper.
+
+Comper is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Comper is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Comper.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <regex>
 #include <ctype.h>
 
+#include "note.h"
+#include "note_numbers.h"
+
 using namespace std;
 
-/// @todo Make sure we use const and & at the right place in arguments and return types
 Note::Note() {
-    _name = "C";
     _octave = MIDDLE_OCTAVE;
-    _setNumber();
     _duration = 0;
     _velocity = 0;
+    setName("C");
 }
 
-Note::Note(string name) {
-    _name = name;
+Note::Note(const string name) {
     _octave = MIDDLE_OCTAVE;
-    _setNumber();
     _duration = 0;
     _velocity = 0;
+    setName(name);
 }
 
-Note::Note(string name, int octave) {
-    _name = name;
+Note::Note(const string name, const int octave) {
     _octave = octave;
-    _setNumber();
     _duration = 0;
     _velocity = 0;
+    setName(name);
 }
 
-Note::Note(string name, int octave, int duration) {
-    _name = name;
+Note::Note(const string name, const int octave, const int duration) {
     _octave = octave;
-    _setNumber();
     _duration = duration;
     _velocity = 0;
+    setName(name);
 }
 
-Note::Note(string name, int octave, int duration, int velocity) {
-    _name = name;
+Note::Note(const string name, const int octave, const int duration, const int velocity) {
     _octave = octave;
-    _setNumber();
     _duration = duration;
     _velocity = velocity;
+    setName(name);
 }
 
-Note::Note(int midiNumber) {
-    _midiNumber = midiNumber;
-    _setName();
-    _setOctave();
+Note::Note(const int midiNumber) {
     _duration = 0;
     _velocity = 0;
-}
-
-Note::Note(int midiNumber, int duration) {
     _midiNumber = midiNumber;
     _setName();
     _setOctave();
+}
+
+Note::Note(const int midiNumber, const int duration) {
     _duration = duration;
     _velocity = 0;
-}
-
-Note::Note(int midiNumber, int duration, int velocity) {
     _midiNumber = midiNumber;
     _setName();
     _setOctave();
-    _duration = duration;
-    _velocity = velocity;
 }
 
-Note & Note::operator=(string name) {
-    setNote(name);
+Note::Note(const int midiNumber, const int duration, const int velocity) {
+    _duration = duration;
+    _velocity = velocity;
+    _midiNumber = midiNumber;
+    _setName();
+    _setOctave();
+}
+
+Note &Note::operator=(const string name) {
+    setName(name);
     return *this;
 }
 
-Note & Note::operator=(int number) {
+Note &Note::operator=(const int number) {
     _midiNumber = number;
     _setName();
     _setOctave();
     return *this;
 }
 
-int Note::operator-(Note &note) {
-    return this->distance(note);
-}
-
-Note Note::operator+(int amount) {
+Note Note::operator+(const int amount) const {
     return Note(_midiNumber + amount);
 }
 
-Note & Note::operator+=(int amount) {
+Note &Note::operator+=(const int amount) {
     setNumber(_midiNumber + amount);
     return *this;
 }
 
-bool Note::operator==(const Note &note) {
-    return note._midiNumber == this->_midiNumber;
+int Note::operator-(const Note &note) const {
+    return this->distance(note);
 }
 
-bool Note::operator==(int midiNumber) {
+bool Note::operator==(const Note &note) const {
+    return note._midiNumber == this->_midiNumber &&
+            note._duration == this->_duration &&
+            note._velocity == this->_velocity;
+}
+
+bool Note::operator==(const int midiNumber) const {
     return midiNumber == _midiNumber;
 }
 
-bool Note::operator==(string name) {
+bool Note::operator==(const string name) const {
     return number(name) == _midiNumber;
 }
 
-bool Note::operator!=(Note &note) {
-    return note._midiNumber != this->_midiNumber;
+bool Note::operator!=(const Note &note) const {
+    return !(*this == note);
 }
 
-bool Note::operator!=(int midiNumber) {
-    return midiNumber != _midiNumber;
+bool Note::operator!=(const int midiNumber) const {
+    return !(*this == midiNumber);
 }
 
-bool Note::operator!=(string name) {
-    return number(name) != _midiNumber;
+bool Note::operator!=(const string name) const {
+    return !(*this == name);
 }
 
-bool Note::operator>(Note &note) {
+bool Note::operator>(const Note &note) const {
     return this->number() > note.number();
 }
 
-bool Note::operator<(Note &note) {
+bool Note::operator<(const Note &note) const {
     return this->number() < note.number();
 }
 
-int Note::number() {
-    return _midiNumber;
+bool Note::operator>=(const Note &note) const {
+    return this->number() >= note.number();
 }
 
-int Note::number(string name) {
+bool Note::operator<=(const Note &note) const {
+    return this->number() <= note.number();
+}
+
+string Note::name() const {
+    return _name;
+}
+
+int Note::number(string name) const {
     int midiNumber = MIDI_NUMBERS.at(toupper(name[0]));
     // Make sure that we don't count the note 'b' as 'bb'
     name = name.substr(1);
-    // adjust for sharps and flats
+    // Adjust for sharps and flats
     if(regex_search(name, regex("##"))) {
         midiNumber += 2;
     } else if(regex_search(name, regex("#"))) {
-        midiNumber++;
+        ++midiNumber;
     } else if(regex_search(name, regex("bb"))) {
         midiNumber -= 2;
     } else if(regex_search(name, regex("b"))) {
-        midiNumber--;
+        --midiNumber;
     }
     if(midiNumber < 0) {
         midiNumber += NUM_NOTES;
@@ -152,51 +174,52 @@ int Note::number(string name) {
     return midiNumber;
 }
 
-int Note::octave() {
+int Note::number() const {
+    return _midiNumber;
+}
+
+int Note::octave() const {
     return _octave;
 }
 
-int Note::duration() {
+int Note::duration() const {
     return _duration;
 }
 
-int Note::velocity() {
+int Note::velocity() const {
     return _velocity;
 }
 
-string Note::name() {
-    return _name;
-}
-
-void Note::setNote(string name) {
+void Note::setName(const string name) {
     _name = name;
+    _checkName();
     _setNumber();
 }
 
-void Note::setOctave(int octave) {
+void Note::setOctave(const int octave) {
     _octave = octave;
     _setNumber();
 }
 
-void Note::setNumber(int number) {
+void Note::setNumber(const int number) {
     _midiNumber = number;
     _setName();
     _setOctave();
 }
 
-void Note::setVelocity(int velocity) {
+void Note::setVelocity(const int velocity) {
     _velocity = velocity;
 }
 
-void Note::setDuration(int duration) {
+void Note::setDuration(const int duration) {
     _duration = duration;
 }
 
-int Note::distance(Note &note) {
+int Note::distance(const Note &note) const {
     return abs(note.number() - this->number());
 }
 
-int Note::shortestDistance(Note &note) {
+int Note::shortestDistance(const Note &note) const {
     int longDistance = distance(note);
     if(longDistance > NUM_NOTES) {
         return min(NUM_NOTES - longDistance % NUM_NOTES, longDistance % NUM_NOTES);
@@ -204,13 +227,22 @@ int Note::shortestDistance(Note &note) {
     return longDistance;
 }
 
+Note Note::closest(const std::string name) const {
+    Note note(name, _octave);
+    if(note.number() < this->_midiNumber - NUM_NOTES / 2) {
+        note.setOctave(note.octave() + 1);
+    } else if(note.number() > this->_midiNumber + NUM_NOTES / 2) {
+        note.setOctave(note.octave() - 1);
+    }
+    return note;
+}
+
 void Note::_setNumber() {
     _midiNumber = number(_name);
 }
 
 void Note::_setName() {
-    // Referenced the following because I'm a noob at c++. Idk if references like this are necessary
-    // https://stackoverflow.com/questions/3136520/determine-if-map-contains-a-value-for-a-key
+    /// @cite https://stackoverflow.com/questions/3136520/determine-if-map-contains-a-value-for-a-key
      auto it = MIDI_NAMES.find(_midiNumber % 12);
     if(it != MIDI_NAMES.end()) {
         _name = MIDI_NAMES.at(_midiNumber % 12);
@@ -225,13 +257,11 @@ void Note::_setOctave() {
     _octave = MIDI_START_OCTAVE + _midiNumber / NUM_NOTES;
 }
 
-Note Note::closest(std::string name) {
-    Note note(name, _octave);
-    if(note.number() < this->_midiNumber - NUM_NOTES / 2) {
-        note.setOctave(note.octave() + 1);
-    } else if(note.number() > this->_midiNumber + NUM_NOTES / 2) {
-        note.setOctave(note.octave() - 1);
+void Note::_checkName() {
+    /* A valid note name must start with a valid letter. It doesn't really matter if
+       it has a letter and then garbage after(like C#KJHDF would just be interpreted as C#) */
+    regex validNameExp("^[A-Ga-g](.*)");
+    if(!regex_match(_name, validNameExp)) {
+        throw runtime_error(_name + " is an invalid note name");
     }
-    return note;
 }
-
