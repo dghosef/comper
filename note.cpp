@@ -16,7 +16,6 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <regex>
-#include <ctype.h>
 
 #include "note.h"
 #include "note_numbers.h"

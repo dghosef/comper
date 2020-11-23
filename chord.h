@@ -20,9 +20,10 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <string>
 #include <vector>
+#include <array>
 #include <set>
-#include <algorithm>
-#include <stdexcept>
+#include <algorithm> // copy_if
+#include <stdexcept> // runtime_error
 
 #include "note.h"
 
@@ -237,7 +238,7 @@ private:
     Note _bass, _first, _second, _third, _fourth, _fifth, _sixth, _seventh;
 
     // Allows for easy access of, iteration through, and indexing of the notes of our chord
-    const std::vector<Note*> _notes = {&_bass, &_first, &_second, &_third, &_fourth, &_fifth,
+    const std::array<Note*, 8> _notes = {&_bass, &_first, &_second, &_third, &_fourth, &_fifth,
                                        &_sixth, &_seventh};
 };
 
