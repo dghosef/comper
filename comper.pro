@@ -10,7 +10,13 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     note.cpp \
-    probcfg.cpp
+    probcfg.cpp \
+    midiwriter.cpp \
+    midifile/Binasc.cpp \
+    midifile/MidiEvent.cpp \
+    midifile/MidiEventList.cpp \
+    midifile/MidiFile.cpp \
+    midifile/MidiMessage.cpp
 
 HEADERS += \
     chord.h \
@@ -18,7 +24,14 @@ HEADERS += \
     note.h \
     note_numbers.h \
     probcfg.h \
-    weighted_vector.h
+    weighted_vector.h \
+    fluid.h \
+    midiwriter.h \
+    midifile/Binasc.h \
+    midifile/MidiEvent.h \
+    midifile/MidiEventList.h \
+    midifile/MidiFile.h \
+    midifile/MidiMessage.h
 
 FORMS += \
     mainwindow.ui
