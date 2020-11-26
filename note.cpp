@@ -16,11 +16,10 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <regex>
+#include <string>
 
 #include "note.h"
 #include "note_numbers.h"
-
-using namespace std;
 
 Note::Note() {
     _octave = MIDDLE_OCTAVE;
@@ -29,28 +28,28 @@ Note::Note() {
     setName("C");
 }
 
-Note::Note(const string name) {
+Note::Note(const std::string name) {
     _octave = MIDDLE_OCTAVE;
     _duration = 0;
     _velocity = 0;
     setName(name);
 }
 
-Note::Note(const string name, const int octave) {
+Note::Note(const std::string name, const int octave) {
     _octave = octave;
     _duration = 0;
     _velocity = 0;
     setName(name);
 }
 
-Note::Note(const string name, const int octave, const int duration) {
+Note::Note(const std::string name, const int octave, const int duration) {
     _octave = octave;
     _duration = duration;
     _velocity = 0;
     setName(name);
 }
 
-Note::Note(const string name, const int octave, const int duration, const int velocity) {
+Note::Note(const std::string name, const int octave, const int duration, const int velocity) {
     _octave = octave;
     _duration = duration;
     _velocity = velocity;
@@ -81,7 +80,7 @@ Note::Note(const int midiNumber, const int duration, const int velocity) {
     _setOctave();
 }
 
-Note &Note::operator=(const string name) {
+Note &Note::operator=(const std::string name) {
     setName(name);
     return *this;
 }
@@ -94,7 +93,7 @@ Note &Note::operator=(const int number) {
 }
 
 Note Note::operator+(const int amount) const {
-    return Note(_midiNumber + amount);
+    return Note(_midiNumber + amount, this->_duration, this->_velocity);
 }
 
 Note &Note::operator+=(const int amount) {
@@ -116,7 +115,7 @@ bool Note::operator==(const int midiNumber) const {
     return midiNumber == _midiNumber;
 }
 
-bool Note::operator==(const string name) const {
+bool Note::operator==(const std::string name) const {
     return number(name) == _midiNumber;
 }
 
@@ -128,42 +127,42 @@ bool Note::operator!=(const int midiNumber) const {
     return !(*this == midiNumber);
 }
 
-bool Note::operator!=(const string name) const {
+bool Note::operator!=(const std::string name) const {
     return !(*this == name);
 }
 
 bool Note::operator>(const Note &note) const {
-    return this->number() > note.number();
+    return this->_midiNumber > note.number();
 }
 
 bool Note::operator<(const Note &note) const {
-    return this->number() < note.number();
+    return this->_midiNumber < note.number();
 }
 
 bool Note::operator>=(const Note &note) const {
-    return this->number() >= note.number();
+    return this->_midiNumber >= note.number();
 }
 
 bool Note::operator<=(const Note &note) const {
-    return this->number() <= note.number();
+    return this->_midiNumber <= note.number();
 }
 
-string Note::name() const {
+std::string Note::name() const {
     return _name;
 }
 
-int Note::number(string name) const {
+int Note::number(std::string name) const {
     int midiNumber = MIDI_NUMBERS.at(toupper(name[0]));
     // Make sure that we don't count the note 'b' as 'bb'
     name = name.substr(1);
     // Adjust for sharps and flats
-    if(regex_search(name, regex("##"))) {
+    if(std::regex_search(name, std::regex("##"))) {
         midiNumber += 2;
-    } else if(regex_search(name, regex("#"))) {
+    } else if(std::regex_search(name, std::regex("#"))) {
         ++midiNumber;
-    } else if(regex_search(name, regex("bb"))) {
+    } else if(std::regex_search(name, std::regex("bb"))) {
         midiNumber -= 2;
-    } else if(regex_search(name, regex("b"))) {
+    } else if(std::regex_search(name, std::regex("b"))) {
         --midiNumber;
     }
     if(midiNumber < 0) {
@@ -189,7 +188,7 @@ int Note::velocity() const {
     return _velocity;
 }
 
-void Note::setName(const string name) {
+void Note::setName(const std::string name) {
     _name = name;
     _checkName();
     _setNumber();
@@ -215,19 +214,19 @@ void Note::setDuration(const int duration) {
 }
 
 int Note::distance(const Note &note) const {
-    return abs(note.number() - this->number());
+    return abs(note.number() - this->_midiNumber);
 }
 
 int Note::shortestDistance(const Note &note) const {
     int longDistance = distance(note);
     if(longDistance > NUM_NOTES) {
-        return min(NUM_NOTES - longDistance % NUM_NOTES, longDistance % NUM_NOTES);
+        return std::min(NUM_NOTES - longDistance % NUM_NOTES, longDistance % NUM_NOTES);
     }
     return longDistance;
 }
 
 Note Note::closest(const std::string name) const {
-    Note note(name, _octave);
+    Note note(name, _octave, _duration, _velocity);
     if(note.number() < this->_midiNumber - NUM_NOTES / 2) {
         note.setOctave(note.octave() + 1);
     } else if(note.number() > this->_midiNumber + NUM_NOTES / 2) {
@@ -259,8 +258,8 @@ void Note::_setOctave() {
 void Note::_checkName() {
     /* A valid note name must start with a valid letter. It doesn't really matter if
        it has a letter and then garbage after(like C#KJHDF would just be interpreted as C#) */
-    regex validNameExp("^[A-Ga-g](.*)");
-    if(!regex_match(_name, validNameExp)) {
-        throw runtime_error(_name + " is an invalid note name");
+    std::regex validNameExp("^[A-Ga-g](.*)");
+    if(!std::regex_match(_name, validNameExp)) {
+        throw std::runtime_error(_name + " is an invalid note name");
     }
 }

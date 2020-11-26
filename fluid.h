@@ -1,12 +1,12 @@
-/** 
+/**
  * Wrappers for several fluid functions
  */
 
 #include <fluidsynth.h>
-#include <stdexcept> // runtime_error
+#include <stdexcept> // std::runtime_error
 #include <string>
 
-namespace fluid {
+namespace comper {
     /**
      * Wrapper for fluid_file_renderer. Given an input midi file, an output audio file, and a soundfont,
      * renders the input to the output.
@@ -24,9 +24,9 @@ namespace fluid {
         fluid_player_t* player;
         fluid_file_renderer_t* renderer;
         settings = new_fluid_settings();
-        // specify the file to store the audio to
-        // make sure you compiled fluidsynth with libsndfile to get a real wave file
-        // otherwise this file will only contain raw s16 stereo PCM
+        /* specify the file to store the audio to
+         * make sure you compiled fluidsynth with libsndfile to get a real wave file
+         * otherwise this file will only contain raw s16 stereo PCM */
         fluid_settings_setstr(settings, "audio.file.name", output.c_str());
         // set our file format
         fluid_settings_setstr(settings, "audio.file.type", format.c_str());
@@ -67,5 +67,4 @@ namespace fluid {
         delete_fluid_synth(synth);
         delete_fluid_settings(settings);
     }
-}
-
+} // comper

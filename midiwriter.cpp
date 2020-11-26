@@ -15,15 +15,13 @@ You should have received a copy of the GNU General Public License
 along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "midiwriter.h"
 #include <vector>
 #include <string>
-#include <stdexcept>
+#include <stdexcept> // std::runtime_error
 
+#include "midiwriter.h"
 #include "note.h"
 #include "chord.h"
-
-using namespace std;
 
 MidiWriter::MidiWriter() {
     _bpm = 120;
@@ -39,14 +37,14 @@ MidiWriter::MidiWriter(const int bpm) {
 
 void MidiWriter::setTempo(const int bpm) {
     if(midifile.getFileDurationInTicks() > 0) {
-        throw runtime_error("You can only set tempo before you add any notes");
+        throw std::runtime_error("You can only set tempo before you add any notes");
     }
     _bpm = bpm;
 }
 
-void MidiWriter::addNotes(const vector<Note> &notes, const int instrument) {
+void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument) {
     if(_track > 16) {
-        throw runtime_error("You have too many tracks");
+        throw std::runtime_error("You have too many tracks");
     }
     midifile.addTrack();
     int actionTick = 0;
@@ -61,9 +59,9 @@ void MidiWriter::addNotes(const vector<Note> &notes, const int instrument) {
     ++_track;
 }
 
-void MidiWriter::addChords(const vector<Chord> &chords, const int instrument) {
+void MidiWriter::addChords(const std::vector<Chord> &chords, const int instrument) {
     if(_track > 16) {
-        throw runtime_error("you have too many tracks");
+        throw std::runtime_error("you have too many tracks");
     }
     midifile.addTrack();
     int actionTick = 0;
@@ -71,7 +69,7 @@ void MidiWriter::addChords(const vector<Chord> &chords, const int instrument) {
     midifile.addPatchChange(_track, actionTick, channel, instrument);
     midifile.addTempo(_track, actionTick, _bpm);
     for(Chord next : chords) {
-        vector<Note> voicing = next.voicing();
+        std::vector<Note> voicing = next.voicing();
         for(Note nextNote : voicing) {
             midifile.addNoteOn(_track, actionTick, channel, nextNote.number(), nextNote.velocity());
             midifile.addNoteOff(_track, actionTick + nextNote.duration() / 4.0 * _tpq, channel,
@@ -81,7 +79,7 @@ void MidiWriter::addChords(const vector<Chord> &chords, const int instrument) {
     }
 }
 
-void MidiWriter::write(string filename) {
+void MidiWriter::write(std::string filename) {
     midifile.sortTracks();
     midifile.write(filename);
 }

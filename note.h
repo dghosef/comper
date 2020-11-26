@@ -77,7 +77,7 @@ public:
 
     /// Returns the absolute distance between this note and `note`
     int operator-(const Note &note) const;
-    
+
     /// Compares this note with `note`
     bool operator==(const Note& note) const;
 

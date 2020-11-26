@@ -31,7 +31,7 @@ public:
 
     /// Constructor that sets tempo to `bpm`.
     MidiWriter(const int bpm);
-    
+
     /// Set our tempo to `bpm`. Only works before we have added any notes
     void setTempo(const int bpm);
 
@@ -45,7 +45,7 @@ public:
     void write(std::string fileName);
 private:
     // The object that stores all our midi data
-    smf::MidiFile midifile; 
+    smf::MidiFile midifile;
 
     // The bpm of our midi file
     int _bpm;

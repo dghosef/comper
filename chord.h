@@ -21,9 +21,8 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 #include <array>
-#include <set>
-#include <algorithm> // copy_if
-#include <stdexcept> // runtime_error
+#include <algorithm> // std::copy_if
+#include <stdexcept> // std::runtime_error
 
 #include "note.h"
 
@@ -89,7 +88,7 @@ public:
 
     /// Compares our chord to `chord`. Functionally equivalent to !(*this == chord)
     bool operator!=(const Chord &chord) const;
-    
+
     /// Set this chord's members equal to those of `chord`
     void setEqual(const Chord &chord);
 
