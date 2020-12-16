@@ -17,22 +17,22 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <regex>
 #include <set>
+#include <string>
 #include <vector>
 #include <queue>
 #include <iostream>
 #include <fstream>
-#include <stdexcept> // runtime_error
+#include <stdexcept> // std::runtime_error
 
 #include "probcfg.h"
 #include "weighted_vector.h"
 
-using namespace std;
 
-/* splits `toSplit` into a vector of strings separated by `delimeter` has multiple characters,
+/* splits `toSplit` into a std::vector of std::strings separated by `delimeter` has multiple characters,
  * splits whenever we match one of delimeter's characters. Shifts our match over by shift*/
-vector<string> split(const string delimeter, const string toSplit) {
+std::vector<std::string> split(const std::string delimeter, const std::string toSplit) {
     size_t previous = 0;
-    vector<string> ret;
+    std::vector<std::string> ret;
     for(size_t i = toSplit.find_first_of(delimeter); i != toSplit.npos;
         i = toSplit.find_first_of(delimeter, i + 1)) {
         ret.push_back(toSplit.substr(previous, i - previous));
@@ -42,14 +42,14 @@ vector<string> split(const string delimeter, const string toSplit) {
     return ret;
 }
 
-// Splits expansion into a vector of nonterminals and terminals
+// Splits expansion into a std::vector of nonterminals and terminals
 /// @todo find more elegant way to do this. Maybe with boost?
-vector<string> splitExpansion(const string expansion) {
+std::vector<std::string> splitExpansion(const std::string expansion) {
     if(expansion.empty()) {
         return {expansion};
     }
-    vector<string> ret;
-    string soFar;
+    std::vector<std::string> ret;
+    std::string soFar;
     for(char c : expansion) {
         switch(c) {
         case '<':
@@ -72,36 +72,36 @@ vector<string> splitExpansion(const string expansion) {
     return ret;
 }
 
-void ProbCFG::addRule(string rule) {
+void ProbCFG::addRule(std::string rule) {
     rule = rule.substr(0, rule.find_first_of('%')); // Remove everything after the comment sign('%')
-    if(regex_match(rule, regex("^( )*$"))) { // Exit if we have empty rule
+    if(regex_match(rule, std::regex("^( )*$"))) { // Exit if we have empty rule
         return;
     } else if(!_isValidRule(rule)) {
-        throw runtime_error("Rule '" + rule + "' is in incorrect format");
+        throw std::runtime_error("Rule '" + rule + "' is in incorrect format");
     }
     // Find the first nonterminal and remove it
-    string initialNonterminal = rule.substr(rule.find_first_of("<"),
+    std::string initialNonterminal = rule.substr(rule.find_first_of("<"),
                                             rule.find_first_of(">") - rule.find_first_of("<") + 1);
-    initialNonterminal = regex_replace(initialNonterminal, regex("^( )*"), "");
+    initialNonterminal = regex_replace(initialNonterminal, std::regex("^( )*"), "");
     _missing.erase(initialNonterminal);
     // Split at each expansion after the initial nonterminal
-    vector<string> splitRule = split("|", rule.substr(rule.find_first_of("=") + 1));
-    vector<vector<string>> expansions;
-    vector<int> weights;
+    std::vector<std::string> splitRule = split("|", rule.substr(rule.find_first_of("=") + 1));
+    std::vector<std::vector<std::string>> expansions;
+    std::vector<int> weights;
     for(auto it = splitRule.begin(); it < splitRule.end(); ++it) {
         /* Find location of first and last characters of each expansion and its weight and insert to
-         * our expansions and weights vector accordingly */
+         * our expansions and weights std::vector accordingly */
         size_t expansionBegin = it->find_first_not_of("| ");
         size_t expansionEnd = it->find_first_of(" ", expansionBegin);
         size_t firstDigit = it->find_first_of("1234567890", expansionEnd + 1);
         size_t lastDigit = it->find_first_not_of("1234567890", firstDigit) - 1;
         weights.push_back(stoi(it->substr(firstDigit, lastDigit - firstDigit + 1)));
         *it = it->substr(expansionBegin, expansionEnd - expansionBegin);
-        *it = *it == "`" ? "" : *it; // '`' stands for the empty string
+        *it = *it == "`" ? "" : *it; // '`' stands for the empty std::string
         expansions.push_back(splitExpansion(*it));
-        /* Add any nonterminals from the vector we just added to expansions that don't have any
+        /* Add any nonterminals from the std::vector we just added to expansions that don't have any
          * matching rule to our _missing set */
-        for(string exp : *(expansions.rbegin())) {
+        for(std::string exp : *(expansions.rbegin())) {
             if(exp[0] == '<' && _rules.find(exp) == _rules.end() && exp != initialNonterminal) {
                 _missing.insert(exp);
             }
@@ -110,23 +110,23 @@ void ProbCFG::addRule(string rule) {
     _rules[initialNonterminal].insert(expansions, weights);
 }
 
-string ProbCFG::generateString(int steps) {
+std::string ProbCFG::generateString(int steps) {
     if(_rules.find("<START>") == _rules.end()) {
-        throw runtime_error("You need a rule with <START> on the left");
+        throw std::runtime_error("You need a rule with <START> on the left");
     } else if(!_missing.empty()) {
-        throw runtime_error("There is a nonterminal on the right doesn't appear on the left");
+        throw std::runtime_error("There is a nonterminal on the right doesn't appear on the left");
     }
-    queue<string> soFar;
+    std::queue<std::string> soFar;
     soFar.push("<START>");
     while(steps-- > 0) {
         for(int i = soFar.size(); i > 0; --i) {
-            string element = soFar.front();
+            std::string element = soFar.front();
             soFar.pop();
             soFar.front();
             // Expand each nonTerminal in soFar and add to expanded
             if(element.find('<') != element.npos) {
-                vector<string> expansion = _rules[element].getElement();
-                for(string s : expansion) {
+                std::vector<std::string> expansion = _rules[element].getElement();
+                for(std::string s : expansion) {
                     soFar.push(s);
                 }
             }
@@ -136,7 +136,7 @@ string ProbCFG::generateString(int steps) {
             }
         }
     }
-    string ret;
+    std::string ret;
     while(!soFar.empty()) {
         // Append each nonterminal expansion while ignoring remaining nonterminals
         ret += !soFar.front().empty() && soFar.front()[0] != '<' ? soFar.front() : "";
@@ -145,50 +145,80 @@ string ProbCFG::generateString(int steps) {
     return ret;
 }
 
-set<string> ProbCFG::missingNonterminals() const {
+std::set<std::string> ProbCFG::missingNonterminals() const {
     return _missing;
 }
 
-map<string, weightedVector<vector<string>>> ProbCFG::rules() const {
+std::map<std::string, weightedVector<std::vector<std::string>>> ProbCFG::rules() const {
     return _rules;
 }
 
-void ProbCFG::fromFile(const string fileName) {
-    ifstream cfgFile;
+void ProbCFG::fromFile(const std::string fileName) {
+    std::ifstream cfgFile;
     cfgFile.open(fileName);
-    string rule;
+    std::string rule;
     if(cfgFile.is_open()) {
         while(getline(cfgFile, rule)) {
             addRule(rule);
         }
     } else {
-        throw runtime_error("File " + fileName + " not found");
+        throw std::runtime_error("File " + fileName + " not found");
     }
     if(_missing.find("<START>") != _missing.end()) {
-        throw runtime_error("Missing <START> nonterminal");
+        throw std::runtime_error("Missing <START> nonterminal");
     } else if(!_missing.empty()) {
-        throw runtime_error(*(_missing.begin)() + " appears on the right but not the left");
+        throw std::runtime_error(*(_missing.begin)() + " appears on the right but not the left");
     }
 }
 
-bool ProbCFG::_isValidRule(const string rule) const {
-    static string spaces = "( )*"; // 0 or more spaces
-    static string nonTerminal = "(<" + _nameRegexp + ">)"; // Nonterminals need are surrounded by <>
-    // A valid terminal either follows the format of `name` or is the empty string('`')
-    static string terminal = "(" + _nameRegexp + "|" + "`" + ")";
+void ProbCFG::fromFile(const std::string fileName, const std::string cfgName) {
+    std::ifstream cfgFile;
+    cfgFile.open(fileName);
+    std::string rule;
+    if(cfgFile.is_open()) {
+        bool inCFG = false;
+        while(getline(cfgFile, rule)) {
+            if(inCFG && rule[0] == '[') {
+                break;
+            }
+            if(inCFG) {
+                addRule(rule);
+            }
+            if(rule == "[" + cfgName + "]") {
+                inCFG = true;
+            }
+        }
+        if(!inCFG) {
+            throw std::runtime_error("Could not find specified CFG in file");
+        }
+    } else {
+        throw std::runtime_error("File " + fileName + " not found");
+    }
+    if(_missing.find("<START>") != _missing.end()) {
+        throw std::runtime_error("Missing <START> nonterminal");
+    } else if(!_missing.empty()) {
+        throw std::runtime_error(*(_missing.begin)() + " appears on the right but not the left");
+    }
+}
+
+bool ProbCFG::_isValidRule(const std::string rule) const {
+    static std::string spaces = "( )*"; // 0 or more spaces
+    static std::string nonTerminal = "(<" + _nameRegexp + ">)"; // Nonterminals need are surrounded by <>
+    // A valid terminal either follows the format of `name` or is the empty std::string('`')
+    static std::string terminal = "(" + _nameRegexp + "|" + "`" + ")";
     // The weight must have at least 1 space before it and then a number greater than 0
-    static string weight = "(( )+0*[1-9][0-9]*)";
+    static std::string weight = "(( )+0*[1-9][0-9]*)";
     /* The 1st expansion must be a terminal followed by a weight or a nonterminal followed by a
      * weight */
-    static string expansion = "((" + nonTerminal + "|" + terminal + ")+" + weight + spaces + ")";
+    static std::string expansion = "((" + nonTerminal + "|" + terminal + ")+" + weight + spaces + ")";
     // Every subsequent expansion must be separated by an "|" with 0 or more spaces surrounding it
-    static string multipleExpansion = "((" + spaces + "\\|" + spaces + expansion +
+    static std::string multipleExpansion = "((" + spaces + "\\|" + spaces + expansion +
             spaces + ")" "*" ")";
-    // Tie all the rules above nicely together and make sure the whole string matches
-    static string ruleRegex = "^" + spaces + nonTerminal + spaces + "\\=" + spaces + expansion +
+    // Tie all the rules above nicely together and make sure the whole std::string matches
+    static std::string ruleRegex = "^" + spaces + nonTerminal + spaces + "\\=" + spaces + expansion +
             spaces + multipleExpansion + "$" + spaces;
     // Make sure backticks are in their own rule
-    static string checkBackticks = "(`([A-Za-z0-9\\-\\+_<>`]+))|(([A-Za-z0-9\\-\\+_<>`]+)`)";
+    static std::string checkBackticks = "(`([A-Za-z0-9\\-\\+_<>`]+))|(([A-Za-z0-9\\-\\+_<>`]+)`)";
     // Check if we match the regex rule and don't have any illegal backticks
-    return regex_match(rule, regex(ruleRegex)) && !regex_search(rule, regex(checkBackticks));
+    return regex_match(rule, std::regex(ruleRegex)) && !regex_search(rule, std::regex(checkBackticks));
 }

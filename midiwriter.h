@@ -14,8 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 */
-#ifndef midiwriter
-#define midiwriter
+#ifndef MIDIWRITER_H
+#define MIDIWRITER_H
 #include <string>
 #include <vector>
 
@@ -23,7 +23,7 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 #include "chord.h"
 #include "midifile/MidiFile.h"
 
-/// Writes Notes and Chords to midi files
+/// Writes Notes and Chords to midi files. Only supports quarter notes and eighth notes when we swing
 class MidiWriter {
 public:
     /// Default constructor. Sets tempo to 120
@@ -32,8 +32,8 @@ public:
     /// Constructor that sets tempo to `bpm`.
     MidiWriter(const int bpm);
 
-    /// Set our tempo to `bpm`. Only works before we have added any notes
-    void setTempo(const int bpm);
+    /// @param swing the ratio of the duration of the first eighth note to the second
+    MidiWriter(const int bpm, const double swing);
 
     /// Adds a line of notes to the beginning of our midi file
     void addNotes(const std::vector<Note> &notes, const int instrument);
@@ -42,7 +42,7 @@ public:
     void addChords(const std::vector<Chord> &chords, const int instrument);
 
     /// Writes our midi data to `fileName`
-    void write(std::string fileName);
+    void write(const std::string fileName);
 private:
     // The object that stores all our midi data
     smf::MidiFile midifile;
@@ -54,6 +54,9 @@ private:
     int _track;
 
     // The number of ticks per quarter note
-    int _tpq = 120;
+    int _tpq;
+
+    // The ratio of the duration of the first eighth note to the second
+    double _swing;
 };
 #endif

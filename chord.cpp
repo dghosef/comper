@@ -211,6 +211,8 @@ Note Chord::thirteenth() const {
 
 void Chord::_setBass() {
     _bass.setOctave(_octave);
+    _bass.setDuration(_duration);
+    _bass.setVelocity(_velocity);
     std::regex _bassRegex = std::regex("(^[A-Ga-g](#|b)?)|(/[A-Ga-g](#|b)?)");
     std::sregex_iterator end;
     // Augmented and diminished messages are falsely recognized as 'a' and 'd' notes so erase them
@@ -226,7 +228,7 @@ void Chord::_setBass() {
 }
 
 void Chord::_setFirst() {
-    _first = Note(_name.substr(0, 2), _octave);
+    _first = Note(_name.substr(0, 2), _octave, _duration, _velocity);
     if(_first < _bass) {
         _first.setOctave(_bass.octave() + 1);
     }

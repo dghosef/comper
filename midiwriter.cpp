@@ -27,23 +27,36 @@ MidiWriter::MidiWriter() {
     _bpm = 120;
     midifile.setTicksPerQuarterNote(120); // Do we need to put this after we add channels/tracks?
     _track = 0;
+    _tpq = 120;
+    _swing = 1;
 }
 
 MidiWriter::MidiWriter(const int bpm) {
+    if(bpm <= 0) {
+        throw std::runtime_error("cannot have a negative or 0 bpm");
+    }
     midifile.setTicksPerQuarterNote(120);
     _bpm = bpm;
     _track = 0;
+    _tpq = 120;
+    _swing = 1;
 }
 
-void MidiWriter::setTempo(const int bpm) {
-    if(midifile.getFileDurationInTicks() > 0) {
-        throw std::runtime_error("You can only set tempo before you add any notes");
+MidiWriter::MidiWriter(const int bpm, const double swing) {
+    midifile.setTicksPerQuarterNote(120);
+    if(swing < 0.5 || swing >= 1) {
+        throw std::runtime_error("swing must be between 0.5(inclusive) and 1(exclusive)");
+    } else if(bpm <= 0) {
+        throw std::runtime_error("cannot have a negative or 0 bpm");
     }
     _bpm = bpm;
+    _track = 0;
+    _tpq = 120;
+    _swing = swing;
 }
 
 void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument) {
-    if(_track > 16) {
+    if(_track == 16) {
         throw std::runtime_error("You have too many tracks");
     }
     midifile.addTrack();
@@ -51,16 +64,25 @@ void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument) 
     int channel = _track; // Put each channel on a separate track
     midifile.addPatchChange(_track, actionTick, channel, instrument);
     midifile.addTempo(_track, actionTick, _bpm);
-    for(Note next : notes) {
-        midifile.addNoteOn(_track, actionTick, channel, next.number(), next.velocity());
-        actionTick += 1.0 / next.duration() * 4.0 * _tpq;
-        midifile.addNoteOff(_track, actionTick, channel, next.number(), next.velocity());
+    for(auto it = notes.begin(); it < notes.end(); ++it) {
+        if(it->duration() == 0) {
+            throw std::runtime_error("Cannot add a note with duration 0");
+        }
+        midifile.addNoteOn(_track, actionTick, channel, it->number(), it->velocity());
+        int swingTicks = 0;
+        if(actionTick % _tpq == 0 && it->duration() == 8 && (it + 1)->duration() == 8) {
+            swingTicks = _swing * _tpq - 0.5 * _tpq;
+        } else if(actionTick % _tpq != 0 && it->duration() == 8 && (it - 1)->duration() == 8) {
+            swingTicks = -1 * (_swing * _tpq - 0.5 * _tpq);
+        }
+        actionTick += 4.0 / it->duration() * _tpq + swingTicks;
+        midifile.addNoteOff(_track, actionTick, channel, it->number(), it->velocity());
     }
     ++_track;
 }
 
 void MidiWriter::addChords(const std::vector<Chord> &chords, const int instrument) {
-    if(_track > 16) {
+    if(_track == 16) {
         throw std::runtime_error("you have too many tracks");
     }
     midifile.addTrack();
@@ -68,18 +90,27 @@ void MidiWriter::addChords(const std::vector<Chord> &chords, const int instrumen
     int channel = _track;
     midifile.addPatchChange(_track, actionTick, channel, instrument);
     midifile.addTempo(_track, actionTick, _bpm);
-    for(Chord next : chords) {
-        std::vector<Note> voicing = next.voicing();
+    for(auto it = chords.begin(); it < chords.end(); ++it) {
+        int swingTicks = 0;
+        if(actionTick % _tpq == 0 && it->duration() == 8 && (it + 1)->duration() == 8) {
+            swingTicks = _swing * _tpq - 0.5 * _tpq;
+        } else if(actionTick % _tpq != 0 && it->duration() == 8 && (it - 1)->duration() == 8) {
+            swingTicks = -1 * (_swing * _tpq - 0.5 * _tpq);
+        }
+        std::vector<Note> voicing = it->voicing();
         for(Note nextNote : voicing) {
+            if(nextNote.duration() == 0) {
+                throw std::runtime_error("Cannot add a note with duration 0");
+            }
             midifile.addNoteOn(_track, actionTick, channel, nextNote.number(), nextNote.velocity());
-            midifile.addNoteOff(_track, actionTick + nextNote.duration() / 4.0 * _tpq, channel,
+            midifile.addNoteOff(_track, actionTick + 4.0 / it->duration() * _tpq + swingTicks, channel,
                     nextNote.number(), nextNote.velocity());
         }
-        actionTick += next.duration() / 4.0 * _tpq;
+        actionTick += 4.0 / it->duration() * _tpq + swingTicks;
     }
 }
 
-void MidiWriter::write(std::string filename) {
+void MidiWriter::write(const std::string filename) {
     midifile.sortTracks();
     midifile.write(filename);
 }

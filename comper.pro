@@ -20,11 +20,13 @@ SOURCES += \
 
 HEADERS += \
     chord.h \
+    comp.h \
     mainwindow.h \
     note.h \
     note_numbers.h \
     probcfg.h \
     weighted_vector.h \
+    simpleBassline.h \
     fluid.h \
     midiwriter.h \
     midifile/Binasc.h \

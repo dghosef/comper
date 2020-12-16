@@ -1,3 +1,5 @@
+#ifndef FLUID_H
+#define FLUID_H
 /**
  * Wrappers for several fluid functions
  */
@@ -68,3 +70,4 @@ namespace comper {
         delete_fluid_settings(settings);
     }
 } // comper
+#endif

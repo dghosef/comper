@@ -88,6 +88,12 @@ public:
      * Throws an error if we have unmatched nonterminals after adding everything
      */
     void fromFile(const std::string fileName);
+
+    /**
+     * Read a CFG from a file and add each rule to existing CFG. Reads only the CFG titled [`name`].
+     * Trhows an error if we have unmatched nonterminals after adding everything
+     */
+    void fromFile(const std::string fileName, const std::string cfgName);
 private:
     // Remove anything after a '%' sign. Returns true if there's still non-whitespace in our string
     bool _removeComments(std::string &rule) const;

@@ -113,11 +113,12 @@ public:
 
     /**
      * Given a vector of possible voicings expressed with ints and a predicate
-     * pick a random voicing from the ones approved by the predicate
+     * pick the voicing that the predicate returns the lowest score on. If the predicate
+     * returns the same score for multiple voicings, returns the one that occured earlier in the vector
      * @param voicingNumbers a vector of possible voicings
-     * @param Func a function that takes a voicing and a chord and checks if the voicing is valid
-     *   pred must have the form bool pred(Chord chord, vector<int> voicing). *this will be passed
-     *   as `chord` and each voicing will be passed as `voicing`.
+     * @param pred a function that takes a voicing and a chord and returns an integer
+     *   pred must have the form int pred(Chord chord, vector<int> voicing). 
+     *   *this will be passed as `chord` and each voicing will be passed as `voicing`.
      */
     template<typename Func>
     void setVoicing(const std::vector<std::vector<int>> voicings, const Func pred) {
@@ -135,7 +136,9 @@ public:
         srand((unsigned)time(NULL));
         auto randIt = acceptableVoicings.begin();
         std::advance(randIt, std::rand() % acceptableVoicings.size());
-        setVoicing(*randIt);
+        setVoicing(*std::min_element(voicings.begin(), voicings.end(), 
+                    [&pred, this] (std::vector<int> voicing1, std::vector<int> voicing2)
+                    {return pred(*this, voicing1) < pred(*this, voicing2);}));
     }
 
     /// Return the duration of our note
