@@ -36,13 +36,14 @@ public:
     MidiWriter(const int bpm, const double swing);
 
     /// Adds a line of notes to the beginning of our midi file
-    void addNotes(const std::vector<Note> &notes, const int instrument);
+    void addNotes(const std::vector<Note> &notes, const int instrument, bool drum = false);
 
     /// Adds a line of chords to the beginning of our midi file
     void addChords(const std::vector<Chord> &chords, const int instrument);
 
     /// Writes our midi data to `fileName`
     void write(const std::string fileName);
+
 private:
     // The object that stores all our midi data
     smf::MidiFile midifile;

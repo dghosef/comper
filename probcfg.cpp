@@ -153,6 +153,7 @@ std::map<std::string, weightedVector<std::vector<std::string>>> ProbCFG::rules()
     return _rules;
 }
 
+///@TODO: combine these functions
 void ProbCFG::fromFile(const std::string fileName) {
     std::ifstream cfgFile;
     cfgFile.open(fileName);

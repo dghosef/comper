@@ -55,13 +55,16 @@ MidiWriter::MidiWriter(const int bpm, const double swing) {
     _swing = swing;
 }
 
-void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument) {
+/// @todo remove magic numbers
+void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument, bool drum) {
     if(_track == 16) {
         throw std::runtime_error("You have too many tracks");
     }
     midifile.addTrack();
     int actionTick = 0;
-    int channel = _track; // Put each channel on a separate track
+    int channel;
+    if(drum) channel = 9; // Drum tracks are always on channel 9
+    else channel = _track < 9 ? _track : _track + 1; // Put each track on a separate channel and avoid 10
     midifile.addPatchChange(_track, actionTick, channel, instrument);
     midifile.addTempo(_track, actionTick, _bpm);
     for(auto it = notes.begin(); it < notes.end(); ++it) {
