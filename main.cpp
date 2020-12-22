@@ -32,8 +32,8 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 /// @todo put classes in namespace, use runtime_error more or standardize approaches
 /// @todo liccenses
 int main(int argc, char *argv[]) {
-    if(argc != 4) {
-        std::cout << "usage: comper <progression file> <cfgfile> bpm" << std::endl;
+    if(argc != 5) {
+        std::cout << "usage: comper <progression file> <style file> <output file> bpm" << std::endl;
         return 1;
     }
     int velocity = 100;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Illegal filename";
         return 1;
     }
-    int bpm = std::strtol(argv[3], nullptr, 10);
+    int bpm = std::strtol(argv[4], nullptr, 10);
     std::string cfgFile = std::string(argv[2]);
     MidiWriter writer(bpm, 2.0/3.0);
     ProbCFG bassPatternCFG;
@@ -76,6 +76,6 @@ int main(int argc, char *argv[]) {
                 Note("G", 5), velocity), chordInstrumentNumber);
     int drumInstrumentNumber = 5;
     writer.addNotes(comper::addSimpleDrumSwingPattern(totalDuration / 4), drumInstrumentNumber, true);
-    writer.write("backing.mid");
+    writer.write(argv[3]);
     return 0;
 }

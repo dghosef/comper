@@ -15,7 +15,7 @@ make
 ```
 
 ## Usage
-General usage of comper is of the form `comper <style file> <progression file> <bpm>` where `<style file>` is the path to the style file, `<progression file>` is a path to the progression file, and `bpm` is an integer representing the beats per minute of the song.
+General usage of comper is of the form `comper <style file> <progression file> <output file> <bpm>` where `<style file>` is the path to the style file, `<progression file>` is a path to the progression file, `<output file>` is the name of the output file to be created, and `bpm` is an integer representing the beats per minute of the song. The generated backing tracking is saved to `backing.mid`
 
 ## File formats
 ### Progression file
@@ -29,6 +29,7 @@ Where each line consists of a chord and then the number of beats it has.
 
 ### Style File
 *Based on [Impro-Visor's](https://www.cs.hmc.edu/~keller/jazz/improvisor/) approach*
+
 Style File consists of a collection of Context-Free-Grammar-like structure. The general syntax for each structure is
 ```
 [title] % this is a comment
