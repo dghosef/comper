@@ -15,7 +15,7 @@ make
 ```
 
 ## Usage
-General usage of comper is of the form `comper <style file> <progression file> <output file> <bpm>` where `<style file>` is the path to the style file, `<progression file>` is a path to the progression file, `<output file>` is the name of the output file to be created, and `bpm` is an integer representing the beats per minute of the song. The generated backing tracking is saved to `backing.mid`
+General usage of comper is of the form `comper <style file> <progression file> <output file> <bpm> <repetitions>` where `<style file>` is the path to the style file, `<progression file>` is a path to the progression file, `<output file>` is the name of the output file to be created, `bpm` is an integer representing the beats per minute of the song, and `repetitions` is the number of times to repeat the chord progression. The generated backing tracking is saved to `backing.mid`
 
 ## File formats
 ### Progression file

@@ -32,29 +32,32 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 /// @todo put classes in namespace, use runtime_error more or standardize approaches
 /// @todo liccenses
 int main(int argc, char *argv[]) {
-    if(argc != 5) {
-        std::cout << "usage: comper <progression file> <style file> <output file> bpm" << std::endl;
+    if(argc != 6) {
+        std::cout << "usage: comper <progression file> <style file> <output file> <bpm> <repetitions>" << std::endl;
         return 1;
     }
     int velocity = 100;
     std::vector<comper::quarterNoteChord> progression;
-    std::ifstream progressionFile(argv[1]);
+    int repetitions = std::strtol(argv[5], nullptr, 10);
     int totalDuration = 0;
-    if(progressionFile.is_open()) {
-        std::string line;
-        while(getline(progressionFile, line)) {
-            std::string chordName = line.substr(0, line.find_last_of(' '));
-            int duration = strtol(line.substr(line.find_last_of(' ') + 1).c_str(), nullptr, 10);
-            Chord nextChord = comper::quarterNoteChord(chordName);
-            nextChord.setDuration(duration);
-            totalDuration += duration;
-            nextChord.setVelocity(velocity);
-            progression.push_back(nextChord);
+    for(int i = 0; i < repetitions; ++i) {
+        std::ifstream progressionFile(argv[1]);
+        if(progressionFile.is_open()) {
+            std::string line;
+            while(getline(progressionFile, line)) {
+                std::string chordName = line.substr(0, line.find_last_of(' '));
+                int duration = strtol(line.substr(line.find_last_of(' ') + 1).c_str(), nullptr, 10);
+                Chord nextChord = comper::quarterNoteChord(chordName);
+                nextChord.setDuration(duration);
+                totalDuration += duration;
+                nextChord.setVelocity(velocity);
+                progression.push_back(nextChord);
+            }
         }
-    }
-    else {
-        std::cout << "Illegal filename";
-        return 1;
+        else {
+            std::cout << "Illegal filename";
+            return 1;
+        }
     }
     int bpm = std::strtol(argv[4], nullptr, 10);
     std::string cfgFile = std::string(argv[2]);
