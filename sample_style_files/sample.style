@@ -1,6 +1,6 @@
 [bassPattern]
 <START> = 0<2> 100
-<2>     = C<2> 40 | S<2> 40 | F<2> 15 | R<2> 4 | O<2> 1
+<2>     = C<2> 45 | S<2> 45 | F<2> 5 | R<2> 4 | O<2> 1
 [bassDirection]
 <START> = <dir><START> 100
 <dir>   = UUUU 25 | DDDD 25 | UDUD 25 | DUDU 25 | UUUD 25 | DDDU 25

@@ -34,7 +34,6 @@ namespace comper {
     std::vector<int> chordTones = {1, 3, 5, 7};
     /// Identical to regular Chord object but its duration represents duration in quarter notes
     typedef Chord quarterNoteChord;
-    /// @todo embellishments in rhythm/notes, encircling
     /**
      * @param `progression` A vector of quarterNoteChords representing the chord progression
      * @param `patternCFG` A ProbCFG that can generate a pattern. 
@@ -62,7 +61,7 @@ namespace comper {
         }
         std::vector<Note> bassline;
         Note prev;
-        // We never play the last chord but just lead towards it
+        // Make sure at the end we have somewhere to lead to
         progression.push_back(progression[0]);
         for(auto it = progression.begin(); it < progression.end() - 1; ++it) {
             Chord currentChord = *it;

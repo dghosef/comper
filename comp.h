@@ -74,6 +74,13 @@ namespace comper {
         original.setVoicing(bestVoicing);
         original.setOctave(bestOctave);
     }
+
+    /**
+     * Given a progression, a rhythmCFG that produces a rhythm as specified in the README, a directionCFG
+     * that produces a direction string as specified in the README, a vector of possible voicings,
+     * a reference note to start voiceleading from, and the velocity, generate a comping pattern and return
+     * it
+     */
     std::vector<Chord> genComping(std::vector<quarterNoteChord> progression, ProbCFG rhythmCFG, 
             ProbCFG directionCFG, std::vector<std::vector<int>> voicings, Note referenceNote,
             int velocity = 100) {

@@ -48,7 +48,6 @@ public:
         return comparison._elements == this->_elements && comparison._weights == this->_weights;
     }
 
-    /// equivalent to !(*this == comparison)
     bool operator!=(const weightedVector<elementType> &comparison) {
         return !(*this == comparison);
     }

@@ -91,7 +91,7 @@ public:
 
     /**
      * Read a CFG from a file and add each rule to existing CFG. Reads only the CFG titled [`name`].
-     * Trhows an error if we have unmatched nonterminals after adding everything
+     * Throws an error if we have unmatched nonterminals after adding everything
      */
     void fromFile(const std::string fileName, const std::string cfgName);
 private:
