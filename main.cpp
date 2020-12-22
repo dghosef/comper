@@ -54,6 +54,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         std::cout << "Illegal filename";
+        return 1;
     }
     int bpm = std::strtol(argv[3], nullptr, 10);
     std::string cfgFile = std::string(argv[2]);

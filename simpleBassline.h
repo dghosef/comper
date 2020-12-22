@@ -127,6 +127,9 @@ namespace comper {
             bassline.push_back(closestLeadingNote(*(bassline.rbegin()), (it + 1)->bass(), currentChord,
                         (Direction)(directions[currentChord.duration() - 1] == 'U')));
         }
+        Note finalNote = bassline[0];
+        finalNote.setDuration(1);
+        bassline.push_back(finalNote);
         return bassline;
     }
 } // comper
