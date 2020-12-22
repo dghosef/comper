@@ -18,7 +18,17 @@ make
 General usage of comper is of the form `comper <style file> <progression file> <bpm>` where `<style file>` is the path to the style file, `<progression file>` is a path to the progression file, and `bpm` is an integer representing the beats per minute of the song.
 
 ## File formats
+### Progression file
+The progression file should be of the format
+```
+D- b9 b13 4
+G7 4
+Cmaj 8
+```
+Where each line consists of a chord and then the number of beats it has.
+
 ### Style File
+*Based on [Impro-Visor's](https://www.cs.hmc.edu/~keller/jazz/improvisor/) approach*
 Style File consists of a collection of Context-Free-Grammar-like structure. The general syntax for each structure is
 ```
 [title] % this is a comment
@@ -43,3 +53,12 @@ Note that recursion is possible. For example, the following would just generate 
 ```
 <START> j<START> 100
 ```
+The style file must contain 4 such structures titled `bassPattern`, `bassDirection`, `compingRhythm`, and `compingDirection`
+
+`bassPattern` must generate a string with any combination of the characters `S`, `A`, `F`, `O`, and `R`. The length of the string after `n` steps must be at least `n` characters. Any extra characters will be ignored. The walking bassline generation function starts each chord by playing its root and then generates a string from the bassPattern. It sequentially reads through the generated string and uses it to generate the next notes in the bassline. If it reads an `S`, it plays the next note in the current chord's scale. If it reads an `A` it plays the next chord tone. If it reads an `F`, it jumps over 1 chord tone and plays the 2nd closest chord tone. If it reads an `O` it jumps by 1 octave in the specified direction. If it reads an `R`, it repeats the previous note. The program will continue reading this pattern until it gets to the last note of the chord, at which point it will play a leading note to the next chord and repeat the process for the next chord
+
+`bassDirection` must generate a string with any combination of the characters `U` and `D`. The length of the string after `n` steps must be at least `n` characters. Any extra characters will be ignored. For each chord, a direction string is generated and looped over to determine the direction of each note in the bassline where each character's direction determines its corresponding note's direction. For example, if the string `UUDU` is generated, the bassline will move up in pitch for the first 2 notes, the 3rd note will move down, and the 4th will go back up. 
+
+`compingRhythm` must generate a string with any combination of the characters `q`, `e`, `4`, `8`, `2`, `1`. `q` stands for quarter note rest, `e` is eighth note rest, `8`, `4`, `2`, and `1` stand for eighth note, quarter note, half note, and whole note respectively. 4 beats worth must be generated every step. The generated rhythm is the rhythm that the automated chord playing will play. The rhythm is generated once for the whole song. 
+
+`compingDirection` has the same specifications as `bassPattern` including characters generated/step, but its generated direction determine the direction of the leading note of the chord rather than the direction of the bassline.
