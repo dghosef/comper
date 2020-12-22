@@ -1,0 +1,10 @@
+[bassPattern]
+<START> = 0<2> 100
+<2>     = C<2> 40 | S<2> 40 | F<2> 15 | R<2> 4 | O<2> 1
+[bassDirection]
+<START> = <dir><START> 100
+<dir>   = UUUU 25 | DDDD 25 | UDUD 25 | DUDU 25 | UUUD 25 | DDDU 25
+[compingRhythm]
+<START> = 22<START> 10 | 88qe4e<START> 10 | 88e888q<START> 10 | e8q4q<START> 10 | 4e8qq<START> 10 | qe8qe8<START> 10 | 848qq<START> 10 | 424<START> 10 | 288q<START> 10 | e8e888q<START> 10
+[compingDirection]
+<START> = DDDD<START> 60 | UDDD<START> 10 | DUDD<START> 10 | DDUD<START> 10 | DDDU<START> 10
