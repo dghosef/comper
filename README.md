@@ -8,10 +8,10 @@ Build by making a build directory(i.e. `build/`), run `cmake` in that directory,
 
 Example:
 
-```
+```bash
 mkdir build && cd build
 qmake ..
 make
-```bash
+```
 
 
