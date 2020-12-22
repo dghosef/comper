@@ -43,6 +43,7 @@ Thumbs.db
 
 # Vim temporary files
 .*.swp
+compile_commands.json
 
 # Visual Studio generated files
 *.ib_pdb_index
@@ -70,4 +71,5 @@ Thumbs.db
 # --------
 *.dll
 *.exe
+comper
 

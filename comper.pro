@@ -1,5 +1,4 @@
-QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -8,7 +7,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 SOURCES += \
     chord.cpp \
     main.cpp \
-    mainwindow.cpp \
     note.cpp \
     probcfg.cpp \
     midiwriter.cpp \
@@ -21,22 +19,17 @@ SOURCES += \
 HEADERS += \
     chord.h \
     comp.h \
-    mainwindow.h \
     note.h \
     note_numbers.h \
     probcfg.h \
     weighted_vector.h \
     simpleBassline.h \
-    fluid.h \
     midiwriter.h \
     midifile/Binasc.h \
     midifile/MidiEvent.h \
     midifile/MidiEventList.h \
     midifile/MidiFile.h \
     midifile/MidiMessage.h
-
-FORMS += \
-    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
