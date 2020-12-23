@@ -5,31 +5,31 @@ QT       += core
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    chord.cpp \
-    main.cpp \
-    note.cpp \
-    probcfg.cpp \
-    midiwriter.cpp \
-    midifile/Binasc.cpp \
-    midifile/MidiEvent.cpp \
-    midifile/MidiEventList.cpp \
-    midifile/MidiFile.cpp \
-    midifile/MidiMessage.cpp
+     src/chord.cpp \
+     src/main.cpp \
+     src/note.cpp \
+     src/probcfg.cpp \
+     src/midiwriter.cpp \
+     src/midifile/Binasc.cpp \
+     src/midifile/MidiEvent.cpp \
+     src/midifile/MidiEventList.cpp \
+     src/midifile/MidiFile.cpp \
+     src/midifile/MidiMessage.cpp
 
 HEADERS += \
-    chord.h \
-    comp.h \
-    note.h \
-    note_numbers.h \
-    probcfg.h \
-    weighted_vector.h \
-    simpleBassline.h \
-    midiwriter.h \
-    midifile/Binasc.h \
-    midifile/MidiEvent.h \
-    midifile/MidiEventList.h \
-    midifile/MidiFile.h \
-    midifile/MidiMessage.h
+     src/chord.h \
+     src/comp.h \
+     src/note.h \
+     src/note_numbers.h \
+     src/probcfg.h \
+     src/weighted_vector.h \
+     src/simpleBassline.h \
+     src/midiwriter.h \
+     src/midifile/Binasc.h \
+     src/midifile/MidiEvent.h \
+     src/midifile/MidiEventList.h \
+     src/midifile/MidiFile.h \
+     src/midifile/MidiMessage.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
