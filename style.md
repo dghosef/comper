@@ -15,7 +15,7 @@ For example, here is one possible sentence the above structure could generate af
 
 Step 1: `<subject><predicate>_` This is the only possible expansion it could pick since the `<START>` nonterminal only has 1 option 
 
-Step 2: `He_went_to_the_<room>` This is one possible expansion where we replace `<subject>` with `He_` and <predicate> with `went_to_the_<room>`. There is a 25% percent chance of this exact sequence occuring.
+Step 2: `He_went_to_the_<room>` This is one possible expansion where we replace `<subject>` with `He_` and `<predicate>` with `went_to_the_<room>`. There is a 25% percent chance of this exact sequence occuring.
 
 Step 3: `He_went_to_the_bathroom<START>` Again, this is just replacing `<room>` with one of the 2 options. Note that there is a 20 / 50 or 40% chance we pick `bathroom<START>` and a 30/50 or 60% chance we pick `restroom<START>`.
 
