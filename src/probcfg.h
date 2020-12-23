@@ -62,7 +62,6 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
  * <happy birthday> = the 15 % Space is not a valid character in names
  */
 
-/// @todo When running getElement, make sure each nonterminal in an expansion has a matching rule
 class ProbCFG {
 public:
     /// Add a single rule to our cfg

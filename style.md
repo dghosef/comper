@@ -32,4 +32,4 @@ The style file must contain 4 such structures titled `bassPattern`, `bassDirecti
 
 `compingRhythm` must generate a string with any combination of the characters `q`, `e`, `8`, `4`, `2`, `1`. `q` stands for quarter note rest, `e` is eighth note rest, `8`, `4`, `2`, and `1` stand for eighth note, quarter note, half note, and whole note respectively. 4 beats worth must be generated every step. The generated rhythm is the rhythm that the automated chord playing will play. The rhythm is generated once for the whole song. 
 
-`compingDirection` has the same specifications as `bassPattern` including characters generated/step, but its generated direction determine the direction of the leading note of the chord rather than the direction of the bassline.
+`compingDirection` has the same specifications as `bassPattern` including characters generated/step, but its generated direction determine the direction of the top note of the chord rather than the direction of the bassline.

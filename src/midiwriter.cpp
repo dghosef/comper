@@ -55,7 +55,6 @@ MidiWriter::MidiWriter(const int bpm, const double swing) {
     _swing = swing;
 }
 
-/// @todo remove magic numbers
 void MidiWriter::addNotes(const std::vector<Note> &notes, const int instrument, bool drum) {
     if(_track == 16) {
         throw std::runtime_error("You have too many tracks");

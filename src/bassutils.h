@@ -24,8 +24,6 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 #include "note.h"
 #include "chord.h"
 
-/// @todo optimize everything(it could/should be much better)
-/// @todo use const in the right place
 namespace comper {
     enum Direction : bool {Up = true, Down = false};
     /* Finds the closest note with the same name as `original` to `comparison` in direction `dir`

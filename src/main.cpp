@@ -29,8 +29,6 @@ along with Comper.  If not, see <https://www.gnu.org/licenses/>.
 #include "probcfg.h"
 #include "midiwriter.h"
 
-/// @todo put classes in namespace, use runtime_error more or standardize approaches
-/// @todo liccenses
 int main(int argc, char *argv[]) {
     if(argc != 6) {
         std::cout << "usage: comper <progression file> <style file> <output file> <bpm> <repetitions>" << std::endl;

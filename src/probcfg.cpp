@@ -43,7 +43,6 @@ std::vector<std::string> split(const std::string delimeter, const std::string to
 }
 
 // Splits expansion into a std::vector of nonterminals and terminals
-/// @todo find more elegant way to do this. Maybe with boost?
 std::vector<std::string> splitExpansion(const std::string expansion) {
     if(expansion.empty()) {
         return {expansion};
