@@ -170,7 +170,7 @@ void ProbCFG::fromFile(const std::string fileName) {
         throw std::runtime_error(*(_missing.begin)() + " appears on the right but not the left");
     }
 }
-#include <iostream>
+
 void ProbCFG::fromFile(const std::string fileName, const std::string cfgName) {
     std::ifstream cfgFile;
     cfgFile.open(fileName);
